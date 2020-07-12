@@ -5,12 +5,12 @@ I'm doing this to learn some Swift, not to provide a 1:1 port. You're probably b
 Go version.
 
 ```
-USAGE: genpw [--length <length>] [--no-upper] [--no-lower] [--no-digit]
+USAGE: genpw [--length <length>] [--upper] [--no-upper] [--lower] [--no-lower] [--digit] [--no-digit]
 
 OPTIONS:
-  --length <length>       Length to generate (default 16.)
-  --no-upper              Exclude uppercase letters.
-  --no-lower              Exclude lowercase letters.
-  --no-digit              Exclude digits.
+  --length <length>       Length to generate. (default: 16)
+  --upper/--no-upper      Include uppercase letters. (default: true)
+  --lower/--no-lower      Include lowercase letters. (default: true)
+  --digit/--no-digit      Include digits. (default: true)
   -h, --help              Show help information.
 ```

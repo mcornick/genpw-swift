@@ -21,17 +21,17 @@ SOFTWARE. */
 import ArgumentParser
 
 struct Genpw: ParsableCommand {
-    @Option(help: "Length to generate (default 16.)")
-    var length: Int?
-    @Flag(name: [.customLong("no-upper")], help: "Exclude uppercase letters.")
-    var noUpper = false
-    @Flag(name: [.customLong("no-lower")], help: "Exclude lowercase letters.")
-    var noLower = false
-    @Flag(name: [.customLong("no-digit")], help: "Exclude digits.")
-    var noDigit = false
+    @Option(help: "Length to generate.")
+    var length = 16
+    @Flag(inversion: .prefixedNo, help: "Include uppercase letters.")
+    var upper = true
+    @Flag(inversion: .prefixedNo, help: "Include lowercase letters.")
+    var lower = true
+    @Flag(inversion: .prefixedNo, help: "Include digits.")
+    var digit = true
 
     func run() throws {
-        if (noUpper && noLower && noDigit) {
+        if (!upper && !lower && !digit) {
             throw RuntimeError("Cannot exclude all three character classes.")
         }
 
@@ -44,20 +44,19 @@ struct Genpw: ParsableCommand {
         let digits = [ "2", "3", "4", "5", "6", "7", "8", "9" ]
 
         var characters: [String] = []
-        if (!noUpper) {
+        if upper {
             characters += uppers
         }
-        if (!noLower) {
+        if lower {
             characters += lowers
         }
-        if (!noDigit) {
+        if digit {
             characters += digits
         }
 
         var pw = [""]
 
-        let passes = length ?? 16
-        for _ in 0..<passes {
+        for _ in 0..<length {
             let i = Int.random(in: 0..<characters.count)
             pw.append(characters[i])
         }

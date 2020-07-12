@@ -54,7 +54,7 @@ final class genpwTests: XCTestCase {
 
         let process = Process()
         process.executableURL = fooBinary
-        process.arguments = ["8"]
+        process.arguments = ["--length", "8"]
         let pipe = Pipe()
         process.standardOutput = pipe
 
