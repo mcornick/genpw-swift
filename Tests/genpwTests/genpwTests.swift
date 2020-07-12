@@ -47,29 +47,6 @@ final class genpwTests: XCTestCase {
 
         XCTAssertEqual(8, output?.count)
     }
-    
-    func testNonNumericArgument() throws {
-        guard #available(macOS 10.13, *) else {
-            return
-        }
-
-        let fooBinary = productsDirectory.appendingPathComponent("genpw")
-
-        let process = Process()
-        process.executableURL = fooBinary
-        process.arguments = ["eight"]
-        let pipe = Pipe()
-        process.standardOutput = pipe
-
-        try process.run()
-        process.waitUntilExit()
-
-        let data = pipe.fileHandleForReading.readDataToEndOfFile()
-        let output = String(data: data, encoding: .utf8)?.trimmingCharacters(
-            in: .whitespacesAndNewlines)
-
-        XCTAssertEqual(16, output?.count)
-    }
 
     /// Returns path to the built products directory.
     var productsDirectory: URL {
@@ -86,6 +63,5 @@ final class genpwTests: XCTestCase {
     static var allTests = [
         ("testNoArguments", testNoArguments),
         ("testNumericArgument", testNumericArgument),
-        ("testNonNumericArgument", testNonNumericArgument),
     ]
 }
