@@ -2,12 +2,7 @@ import XCTest
 import class Foundation.Bundle
 
 final class genpwTests: XCTestCase {
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct
-        // results.
-
-        // Some of the APIs that we use below are available in macOS 10.13 and above.
+    func testNoArguments() throws {
         guard #available(macOS 10.13, *) else {
             return
         }
@@ -24,9 +19,56 @@ final class genpwTests: XCTestCase {
         process.waitUntilExit()
 
         let data = pipe.fileHandleForReading.readDataToEndOfFile()
-        let output = String(data: data, encoding: .utf8)
+        let output = String(data: data, encoding: .utf8)?.trimmingCharacters(
+            in: .whitespacesAndNewlines)
 
-        XCTAssertEqual(output, "Hello, world!\n")
+        XCTAssertEqual(16, output?.count)
+    }
+
+    func testNumericArgument() throws {
+        guard #available(macOS 10.13, *) else {
+            return
+        }
+
+        let fooBinary = productsDirectory.appendingPathComponent("genpw")
+
+        let process = Process()
+        process.executableURL = fooBinary
+        process.arguments = ["8"]
+        let pipe = Pipe()
+        process.standardOutput = pipe
+
+        try process.run()
+        process.waitUntilExit()
+
+        let data = pipe.fileHandleForReading.readDataToEndOfFile()
+        let output = String(data: data, encoding: .utf8)?.trimmingCharacters(
+            in: .whitespacesAndNewlines)
+
+        XCTAssertEqual(8, output?.count)
+    }
+    
+    func testNonNumericArgument() throws {
+        guard #available(macOS 10.13, *) else {
+            return
+        }
+
+        let fooBinary = productsDirectory.appendingPathComponent("genpw")
+
+        let process = Process()
+        process.executableURL = fooBinary
+        process.arguments = ["eight"]
+        let pipe = Pipe()
+        process.standardOutput = pipe
+
+        try process.run()
+        process.waitUntilExit()
+
+        let data = pipe.fileHandleForReading.readDataToEndOfFile()
+        let output = String(data: data, encoding: .utf8)?.trimmingCharacters(
+            in: .whitespacesAndNewlines)
+
+        XCTAssertEqual(16, output?.count)
     }
 
     /// Returns path to the built products directory.
@@ -42,6 +84,8 @@ final class genpwTests: XCTestCase {
     }
 
     static var allTests = [
-        ("testExample", testExample),
+        ("testNoArguments", testNoArguments),
+        ("testNumericArgument", testNumericArgument),
+        ("testNonNumericArgument", testNonNumericArgument),
     ]
 }
