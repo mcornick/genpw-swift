@@ -45,7 +45,7 @@ final class genpwTests: XCTestCase {
         XCTAssertEqual(16, output?.count)
     }
 
-    func testNumericArgument() throws {
+    func testLengthOption() throws {
         guard #available(macOS 10.13, *) else {
             return
         }
@@ -68,6 +68,78 @@ final class genpwTests: XCTestCase {
         XCTAssertEqual(8, output?.count)
     }
 
+    func testUpperFlag() throws {
+        guard #available(macOS 10.13, *) else {
+            return
+        }
+
+        let fooBinary = productsDirectory.appendingPathComponent("genpw")
+
+        let process = Process()
+        process.executableURL = fooBinary
+        process.arguments = ["--no-upper"]
+        let pipe = Pipe()
+        process.standardOutput = pipe
+
+        try process.run()
+        process.waitUntilExit()
+
+        let data = pipe.fileHandleForReading.readDataToEndOfFile()
+        let output = String(data: data, encoding: .utf8)?.trimmingCharacters(
+            in: .whitespacesAndNewlines)
+
+        let range = output!.rangeOfCharacter(from: CharacterSet.capitalizedLetters)
+        XCTAssert(range == nil)
+    }
+
+    func testLowerFlag() throws {
+        guard #available(macOS 10.13, *) else {
+            return
+        }
+
+        let fooBinary = productsDirectory.appendingPathComponent("genpw")
+
+        let process = Process()
+        process.executableURL = fooBinary
+        process.arguments = ["--no-lower"]
+        let pipe = Pipe()
+        process.standardOutput = pipe
+
+        try process.run()
+        process.waitUntilExit()
+
+        let data = pipe.fileHandleForReading.readDataToEndOfFile()
+        let output = String(data: data, encoding: .utf8)?.trimmingCharacters(
+            in: .whitespacesAndNewlines)
+
+        let range = output!.rangeOfCharacter(from: CharacterSet.lowercaseLetters)
+        XCTAssert(range == nil)
+    }
+
+    func testDigitFlag() throws {
+        guard #available(macOS 10.13, *) else {
+            return
+        }
+
+        let fooBinary = productsDirectory.appendingPathComponent("genpw")
+
+        let process = Process()
+        process.executableURL = fooBinary
+        process.arguments = ["--no-digit"]
+        let pipe = Pipe()
+        process.standardOutput = pipe
+
+        try process.run()
+        process.waitUntilExit()
+
+        let data = pipe.fileHandleForReading.readDataToEndOfFile()
+        let output = String(data: data, encoding: .utf8)?.trimmingCharacters(
+            in: .whitespacesAndNewlines)
+
+        let range = output!.rangeOfCharacter(from: CharacterSet.decimalDigits)
+        XCTAssert(range == nil)
+    }
+
     /// Returns path to the built products directory.
     var productsDirectory: URL {
       #if os(macOS)
@@ -82,6 +154,9 @@ final class genpwTests: XCTestCase {
 
     static var allTests = [
         ("testNoArguments", testNoArguments),
-        ("testNumericArgument", testNumericArgument),
+        ("testLengthOption", testLengthOption),
+        ("testUpperFlag", testUpperFlag),
+        ("testLowerFlag", testLowerFlag),
+        ("testDigitFlag", testDigitFlag),
     ]
 }
