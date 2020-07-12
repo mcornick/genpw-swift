@@ -21,123 +21,59 @@ SOFTWARE. */
 import XCTest
 import class Foundation.Bundle
 
+@available(OSX 10.13, *)
 final class genpwTests: XCTestCase {
-    func testNoArguments() throws {
-        guard #available(macOS 10.13, *) else {
-            return
-        }
-
-        let fooBinary = productsDirectory.appendingPathComponent("genpw")
-
+    func execute(arguments: [String]) throws -> (Int32, String) {
+        let binary = productsDirectory.appendingPathComponent("genpw")
         let process = Process()
-        process.executableURL = fooBinary
-
+        process.executableURL = binary
+        process.arguments = arguments
         let pipe = Pipe()
         process.standardOutput = pipe
-
         try process.run()
         process.waitUntilExit()
-
         let data = pipe.fileHandleForReading.readDataToEndOfFile()
-        let output = String(data: data, encoding: .utf8)?.trimmingCharacters(
-            in: .whitespacesAndNewlines)
-
-        XCTAssertEqual(16, output?.count)
+        let output = String(data: data, encoding: .utf8)
+        let password = output!.trimmingCharacters(in: .whitespacesAndNewlines)
+        return(process.terminationStatus, password)
+    }
+    
+    func testNoArguments() throws {
+        let (_, output) = try execute(arguments: [])
+        XCTAssertEqual(16, output.count)
     }
 
     func testLengthOption() throws {
-        guard #available(macOS 10.13, *) else {
-            return
-        }
-
-        let fooBinary = productsDirectory.appendingPathComponent("genpw")
-
-        let process = Process()
-        process.executableURL = fooBinary
-        process.arguments = ["--length", "8"]
-        let pipe = Pipe()
-        process.standardOutput = pipe
-
-        try process.run()
-        process.waitUntilExit()
-
-        let data = pipe.fileHandleForReading.readDataToEndOfFile()
-        let output = String(data: data, encoding: .utf8)?.trimmingCharacters(
-            in: .whitespacesAndNewlines)
-
-        XCTAssertEqual(8, output?.count)
+        let (_, output) = try execute(arguments: ["--length", "8"])
+        XCTAssertEqual(8, output.count)
     }
 
+    func testBadLength() throws {
+        let (status, _) = try execute(arguments: ["--length", "eight"])
+        XCTAssertEqual(64, status)
+    }
+    
     func testUpperFlag() throws {
-        guard #available(macOS 10.13, *) else {
-            return
-        }
-
-        let fooBinary = productsDirectory.appendingPathComponent("genpw")
-
-        let process = Process()
-        process.executableURL = fooBinary
-        process.arguments = ["--no-upper"]
-        let pipe = Pipe()
-        process.standardOutput = pipe
-
-        try process.run()
-        process.waitUntilExit()
-
-        let data = pipe.fileHandleForReading.readDataToEndOfFile()
-        let output = String(data: data, encoding: .utf8)?.trimmingCharacters(
-            in: .whitespacesAndNewlines)
-
-        let range = output!.rangeOfCharacter(from: CharacterSet.capitalizedLetters)
-        XCTAssert(range == nil)
+        let (_, output) = try execute(arguments: ["--no-upper"])
+        let uppers = output.rangeOfCharacter(from: .capitalizedLetters)
+        XCTAssert(uppers == nil)
     }
 
     func testLowerFlag() throws {
-        guard #available(macOS 10.13, *) else {
-            return
-        }
-
-        let fooBinary = productsDirectory.appendingPathComponent("genpw")
-
-        let process = Process()
-        process.executableURL = fooBinary
-        process.arguments = ["--no-lower"]
-        let pipe = Pipe()
-        process.standardOutput = pipe
-
-        try process.run()
-        process.waitUntilExit()
-
-        let data = pipe.fileHandleForReading.readDataToEndOfFile()
-        let output = String(data: data, encoding: .utf8)?.trimmingCharacters(
-            in: .whitespacesAndNewlines)
-
-        let range = output!.rangeOfCharacter(from: CharacterSet.lowercaseLetters)
-        XCTAssert(range == nil)
+        let (_, output) = try execute(arguments: ["--no-lower"])
+        let lowers = output.rangeOfCharacter(from: .lowercaseLetters)
+        XCTAssert(lowers == nil)
     }
 
     func testDigitFlag() throws {
-        guard #available(macOS 10.13, *) else {
-            return
-        }
+        let (_, output) = try execute(arguments: ["--no-digit"])
+        let digits = output.rangeOfCharacter(from: .decimalDigits)
+        XCTAssert(digits == nil)
+    }
 
-        let fooBinary = productsDirectory.appendingPathComponent("genpw")
-
-        let process = Process()
-        process.executableURL = fooBinary
-        process.arguments = ["--no-digit"]
-        let pipe = Pipe()
-        process.standardOutput = pipe
-
-        try process.run()
-        process.waitUntilExit()
-
-        let data = pipe.fileHandleForReading.readDataToEndOfFile()
-        let output = String(data: data, encoding: .utf8)?.trimmingCharacters(
-            in: .whitespacesAndNewlines)
-
-        let range = output!.rangeOfCharacter(from: CharacterSet.decimalDigits)
-        XCTAssert(range == nil)
+    func testBadFlags() throws {
+        let (status, _) = try execute(arguments: ["--no-upper", "--no-lower", "--no-digit"])
+        XCTAssertEqual(1, status)
     }
 
     /// Returns path to the built products directory.
@@ -155,6 +91,7 @@ final class genpwTests: XCTestCase {
     static var allTests = [
         ("testNoArguments", testNoArguments),
         ("testLengthOption", testLengthOption),
+        ("testBadLength", testBadLength),
         ("testUpperFlag", testUpperFlag),
         ("testLowerFlag", testLowerFlag),
         ("testDigitFlag", testDigitFlag),
