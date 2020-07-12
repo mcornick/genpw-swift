@@ -54,13 +54,13 @@ struct Genpw: ParsableCommand {
             characters += digits
         }
 
-        var pw = [""]
+        var pwChars: [String] = []
 
         for _ in 0 ..< length {
-            let i = Int.random(in: 0 ..< characters.count)
-            pw.append(characters[i])
+            let charIndex = Int.random(in: 0 ..< characters.count)
+            pwChars.append(characters[charIndex])
         }
-        let password = pw.joined(separator: "")
+        let password = pwChars.joined(separator: "")
         print(password)
     }
 }
