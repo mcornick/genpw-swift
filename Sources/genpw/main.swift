@@ -10,13 +10,9 @@ struct Genpw: ParsableCommand {
     @Flag(name: [.customLong("no-digit")], help: "Exclude digits.")
     var noDigit = false
 
-    enum RuntimeError: Error {
-        case badOptions
-    }
-
     func run() throws {
         if (noUpper && noLower && noDigit) {
-            throw RuntimeError.badOptions
+            throw RuntimeError("Cannot exclude all three character classes.")
         }
 
         let uppers = [ "A", "B", "C", "D", "E", "F", "G", "H", "J", "K", "L",
@@ -47,6 +43,13 @@ struct Genpw: ParsableCommand {
         }
         let password = pw.joined(separator: "")
         print(password)
+    }
+}
+
+struct RuntimeError: Error, CustomStringConvertible {
+    var description: String
+    init(_ description: String) {
+        self.description = description
     }
 }
 
