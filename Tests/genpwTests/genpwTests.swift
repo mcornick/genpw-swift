@@ -55,7 +55,7 @@ final class genpwTests: XCTestCase {
 
     func testUpperFlag() throws {
         let (_, output) = try execute(arguments: ["--no-upper"])
-        let uppers = output.rangeOfCharacter(from: .capitalizedLetters)
+        let uppers = output.rangeOfCharacter(from: .uppercaseLetters)
         XCTAssertNil(uppers)
     }
 
