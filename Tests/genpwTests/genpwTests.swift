@@ -73,7 +73,7 @@ final class genpwTests: XCTestCase {
 
     func testBadFlags() throws {
         let (status, _) = try execute(arguments: ["--no-upper", "--no-lower", "--no-digit"])
-        XCTAssertEqual(1, status)
+        XCTAssertEqual(64, status)
     }
 
     /// Returns path to the built products directory.

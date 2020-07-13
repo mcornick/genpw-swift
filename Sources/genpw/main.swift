@@ -30,11 +30,13 @@ struct Genpw: ParsableCommand {
     @Flag(inversion: .prefixedNo, help: "Include digits.")
     var digit = true
 
-    func run() throws {
-        if !upper, !lower, !digit {
-            throw RuntimeError("Cannot exclude all three character classes.")
+    func validate() throws {
+        guard upper || lower || digit else {
+            throw ValidationError("Cannot exclude all three character classes.")
         }
+    }
 
+    func run() {
         let uppers = ["A", "B", "C", "D", "E", "F", "G", "H", "J", "K", "L",
                       "M", "N", "P", "Q", "R", "S", "T", "U", "V", "W", "X",
                       "Y", "Z"]
@@ -62,13 +64,6 @@ struct Genpw: ParsableCommand {
         }
         let password = pwChars.joined(separator: "")
         print(password)
-    }
-}
-
-struct RuntimeError: Error, CustomStringConvertible {
-    var description: String
-    init(_ description: String) {
-        self.description = description
     }
 }
 
