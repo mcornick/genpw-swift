@@ -56,19 +56,19 @@ final class genpwTests: XCTestCase {
     func testUpperFlag() throws {
         let (_, output) = try execute(arguments: ["--no-upper"])
         let uppers = output.rangeOfCharacter(from: .capitalizedLetters)
-        XCTAssert(uppers == nil)
+        XCTAssertNil(uppers)
     }
 
     func testLowerFlag() throws {
         let (_, output) = try execute(arguments: ["--no-lower"])
         let lowers = output.rangeOfCharacter(from: .lowercaseLetters)
-        XCTAssert(lowers == nil)
+        XCTAssertNil(lowers)
     }
 
     func testDigitFlag() throws {
         let (_, output) = try execute(arguments: ["--no-digit"])
         let digits = output.rangeOfCharacter(from: .decimalDigits)
-        XCTAssert(digits == nil)
+        XCTAssertNil(digits)
     }
 
     func testBadFlags() throws {
