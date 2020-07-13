@@ -21,6 +21,8 @@
 import ArgumentParser
 
 struct Genpw: ParsableCommand {
+    @Argument(help: .hidden)
+    var bareLength: Int?
     @Option(help: "Length to generate.")
     var length = 16
     @Flag(inversion: .prefixedNo, help: "Include uppercase letters.")
@@ -36,7 +38,7 @@ struct Genpw: ParsableCommand {
         }
     }
 
-    func run() {
+    mutating func run() {
         let uppers = ["A", "B", "C", "D", "E", "F", "G", "H", "J", "K", "L",
                       "M", "N", "P", "Q", "R", "S", "T", "U", "V", "W", "X",
                       "Y", "Z"]
@@ -55,7 +57,9 @@ struct Genpw: ParsableCommand {
         if digit {
             characters += digits
         }
-
+        if bareLength != nil {
+            length = bareLength!
+        }
         var pwChars: [String] = []
 
         for _ in 0 ..< length {

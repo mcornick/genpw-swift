@@ -76,6 +76,16 @@ final class genpwTests: XCTestCase {
         XCTAssertEqual(64, status)
     }
 
+    func testBareLength() throws {
+        let (_, output) = try execute(arguments: ["8"])
+        XCTAssertEqual(8, output.count)
+    }
+
+    func testBareLengthOverridesLengthOption() throws {
+        let (_, output) = try execute(arguments: ["8", "--length", "12"])
+        XCTAssertEqual(8, output.count)
+    }
+
     /// Returns path to the built products directory.
     var productsDirectory: URL {
         #if os(macOS)
