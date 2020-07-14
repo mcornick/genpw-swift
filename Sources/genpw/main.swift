@@ -39,6 +39,14 @@ struct Genpw: ParsableCommand {
         }
     }
 
+    func minimumLength() -> Int {
+        var minimum = 0
+        if upper { minimum += 1 }
+        if lower { minimum += 1 }
+        if digit { minimum += 1 }
+        return minimum
+    }
+
     func isAcceptable(password: String) -> Bool {
         let hasUpper = password.rangeOfCharacter(from: .uppercaseLetters)
         let hasLower = password.rangeOfCharacter(from: .lowercaseLetters)
@@ -49,7 +57,11 @@ struct Genpw: ParsableCommand {
         return upperOK && lowerOK && digitOK
     }
 
-    func generate() -> String {
+    func generate() throws -> String {
+        guard length >= minimumLength() else {
+            throw ValidationError("Length must be at least \(minimumLength()).")
+        }
+
         let uppers = ["A", "B", "C", "D", "E", "F", "G", "H", "J", "K", "L",
                       "M", "N", "P", "Q", "R", "S", "T", "U", "V", "W", "X",
                       "Y", "Z"]
@@ -59,15 +71,9 @@ struct Genpw: ParsableCommand {
         let digits = ["2", "3", "4", "5", "6", "7", "8", "9"]
 
         var candidates: [String] = []
-        if upper {
-            candidates += uppers
-        }
-        if lower {
-            candidates += lowers
-        }
-        if digit {
-            candidates += digits
-        }
+        if upper { candidates += uppers }
+        if lower { candidates += lowers }
+        if digit { candidates += digits }
 
         var characters: [String] = []
         let repeats = Int(length / candidates.count) + 1
@@ -84,14 +90,14 @@ struct Genpw: ParsableCommand {
         return password
     }
 
-    mutating func run() {
+    mutating func run() throws {
         if bareLength != nil {
             length = bareLength!
         }
 
         var password = ""
         while !isAcceptable(password: password) {
-            password = generate()
+            password = try generate()
         }
         print(password)
     }
