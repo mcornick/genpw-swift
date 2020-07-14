@@ -39,6 +39,10 @@ struct Genpw: ParsableCommand {
     }
 
     mutating func run() {
+        if bareLength != nil {
+            length = bareLength!
+        }
+
         let uppers = ["A", "B", "C", "D", "E", "F", "G", "H", "J", "K", "L",
                       "M", "N", "P", "Q", "R", "S", "T", "U", "V", "W", "X",
                       "Y", "Z"]
@@ -47,26 +51,30 @@ struct Genpw: ParsableCommand {
                       "x", "y", "z"]
         let digits = ["2", "3", "4", "5", "6", "7", "8", "9"]
 
-        var characters: [String] = []
+        var candidates: [String] = []
         if upper {
-            characters += uppers
+            candidates += uppers
         }
         if lower {
-            characters += lowers
+            candidates += lowers
         }
         if digit {
-            characters += digits
+            candidates += digits
         }
-        if bareLength != nil {
-            length = bareLength!
-        }
-        var pwChars: [String] = []
 
+        var characters: [String] = []
+        let repeats = Int(length / candidates.count) + 1
+        for _ in 0 ..< repeats {
+            characters += candidates
+        }
+
+        var pwChars: [String] = []
         for _ in 0 ..< length {
             let charIndex = Int.random(in: 0 ..< characters.count)
-            pwChars.append(characters[charIndex])
+            pwChars.append(characters.remove(at: charIndex))
         }
         let password = pwChars.joined(separator: "")
+
         print(password)
     }
 }
