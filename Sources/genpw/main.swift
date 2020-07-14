@@ -26,29 +26,27 @@ struct Genpw: ParsableCommand {
     var bareLength: Int?
     @Option(help: "Length to generate.")
     var length = 16
-    @Flag(name: .customLong("upper"), inversion: .prefixedNo,
-          help: "Include uppercase letters.")
-    var upperFlag = true
-    @Flag(name: .customLong("lower"), inversion: .prefixedNo,
-          help: "Include lowercase letters.")
-    var lowerFlag = true
-    @Flag(name: .customLong("digit"), inversion: .prefixedNo,
-          help: "Include digits.")
-    var digitFlag = true
+    @Flag(inversion: .prefixedNo, help: "Include uppercase letters.")
+    var upper = true
+    @Flag(inversion: .prefixedNo, help: "Include lowercase letters.")
+    var lower = true
+    @Flag(inversion: .prefixedNo, help: "Include digits.")
+    var digit = true
 
     func validate() throws {
-        guard upperFlag || lowerFlag || digitFlag else {
+        guard upper || lower || digit else {
             throw ValidationError("Cannot exclude all three character classes.")
         }
     }
 
     func isAcceptable(password: String) -> Bool {
-        let hasUpper = password.rangeOfCharacter(from: CharacterSet.uppercaseLetters)
-        let hasLower = password.rangeOfCharacter(from: CharacterSet.lowercaseLetters)
-        let hasDigit = password.rangeOfCharacter(from: CharacterSet.decimalDigits)
-        return (!upperFlag || hasUpper != nil) &&
-            (!lowerFlag || hasLower != nil) &&
-            (!digitFlag || hasDigit != nil)
+        let hasUpper = password.rangeOfCharacter(from: .uppercaseLetters)
+        let hasLower = password.rangeOfCharacter(from: .lowercaseLetters)
+        let hasDigit = password.rangeOfCharacter(from: .decimalDigits)
+        let upperOK = (!upper || hasUpper != nil)
+        let lowerOK = (!lower || hasLower != nil)
+        let digitOK = (!digit || hasDigit != nil)
+        return upperOK && lowerOK && digitOK
     }
 
     func generate() -> String {
@@ -61,13 +59,13 @@ struct Genpw: ParsableCommand {
         let digits = ["2", "3", "4", "5", "6", "7", "8", "9"]
 
         var candidates: [String] = []
-        if upperFlag {
+        if upper {
             candidates += uppers
         }
-        if lowerFlag {
+        if lower {
             candidates += lowers
         }
-        if digitFlag {
+        if digit {
             candidates += digits
         }
 
