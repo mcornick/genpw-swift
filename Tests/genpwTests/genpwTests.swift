@@ -86,6 +86,58 @@ final class genpwTests: XCTestCase {
         XCTAssertEqual(8, output.count)
     }
 
+    func testIsAcceptableNoUpperNoLower() throws {
+        let (_, output) = try execute(arguments: ["--no-upper", "--no-lower"])
+        let digits = output.rangeOfCharacter(from: .decimalDigits)
+        XCTAssertNotNil(digits)
+    }
+
+    func testIsAcceptableNoUpperNoDigit() throws {
+        let (_, output) = try execute(arguments: ["--no-upper", "--no-digit"])
+        let lowers = output.rangeOfCharacter(from: .lowercaseLetters)
+        XCTAssertNotNil(lowers)
+    }
+
+    func testIsAcceptableNoDigitNoLower() throws {
+        let (_, output) = try execute(arguments: ["--no-digit", "--no-lower"])
+        let uppers = output.rangeOfCharacter(from: .uppercaseLetters)
+        XCTAssertNotNil(uppers)
+    }
+
+    func testIsAcceptableNoDigit() throws {
+        let (_, output) = try execute(arguments: ["--no-digit"])
+        let uppers = output.rangeOfCharacter(from: .uppercaseLetters)
+        let lowers = output.rangeOfCharacter(from: .lowercaseLetters)
+        XCTAssertNotNil(uppers)
+        XCTAssertNotNil(lowers)
+    }
+
+    func testIsAcceptableNoUpper() throws {
+        let (_, output) = try execute(arguments: ["--no-upper"])
+        let digits = output.rangeOfCharacter(from: .decimalDigits)
+        let lowers = output.rangeOfCharacter(from: .lowercaseLetters)
+        XCTAssertNotNil(digits)
+        XCTAssertNotNil(lowers)
+    }
+
+    func testIsAcceptableNoLower() throws {
+        let (_, output) = try execute(arguments: ["--no-lower"])
+        let uppers = output.rangeOfCharacter(from: .uppercaseLetters)
+        let digits = output.rangeOfCharacter(from: .decimalDigits)
+        XCTAssertNotNil(uppers)
+        XCTAssertNotNil(digits)
+    }
+
+    func testIsAcceptableAllThree() throws {
+        let (_, output) = try execute(arguments: [])
+        let uppers = output.rangeOfCharacter(from: .uppercaseLetters)
+        let lowers = output.rangeOfCharacter(from: .lowercaseLetters)
+        let digits = output.rangeOfCharacter(from: .decimalDigits)
+        XCTAssertNotNil(uppers)
+        XCTAssertNotNil(lowers)
+        XCTAssertNotNil(digits)
+    }
+
     /// Returns path to the built products directory.
     var productsDirectory: URL {
         #if os(macOS)
@@ -105,5 +157,15 @@ final class genpwTests: XCTestCase {
         ("testUpperFlag", testUpperFlag),
         ("testLowerFlag", testLowerFlag),
         ("testDigitFlag", testDigitFlag),
+        ("testBadFlags", testBadFlags),
+        ("testBareLength", testBareLength),
+        ("testBareLengthOverridesLengthOption", testBareLengthOverridesLengthOption),
+        ("testIsAcceptableNoUpperNoLower", testIsAcceptableNoUpperNoLower),
+        ("testIsAcceptableNoUpperNoDigit", testIsAcceptableNoUpperNoDigit),
+        ("testIsAcceptableNoDigitNoLower", testIsAcceptableNoDigitNoLower),
+        ("testIsAcceptableNoDigit", testIsAcceptableNoDigit),
+        ("testIsAcceptableNoUpper", testIsAcceptableNoUpper),
+        ("testIsAcceptableNoLower", testIsAcceptableNoLower),
+        ("testIsAcceptableAllThree", testIsAcceptableAllThree),
     ]
 }

@@ -19,30 +19,39 @@
  SOFTWARE. */
 
 import ArgumentParser
+import Foundation
 
 struct Genpw: ParsableCommand {
     @Argument(help: .hidden)
     var bareLength: Int?
     @Option(help: "Length to generate.")
     var length = 16
-    @Flag(inversion: .prefixedNo, help: "Include uppercase letters.")
-    var upper = true
-    @Flag(inversion: .prefixedNo, help: "Include lowercase letters.")
-    var lower = true
-    @Flag(inversion: .prefixedNo, help: "Include digits.")
-    var digit = true
+    @Flag(name: .customLong("upper"), inversion: .prefixedNo,
+          help: "Include uppercase letters.")
+    var upperFlag = true
+    @Flag(name: .customLong("lower"), inversion: .prefixedNo,
+          help: "Include lowercase letters.")
+    var lowerFlag = true
+    @Flag(name: .customLong("digit"), inversion: .prefixedNo,
+          help: "Include digits.")
+    var digitFlag = true
 
     func validate() throws {
-        guard upper || lower || digit else {
+        guard upperFlag || lowerFlag || digitFlag else {
             throw ValidationError("Cannot exclude all three character classes.")
         }
     }
 
-    mutating func run() {
-        if bareLength != nil {
-            length = bareLength!
-        }
+    func isAcceptable(password: String) -> Bool {
+        let hasUpper = password.rangeOfCharacter(from: CharacterSet.uppercaseLetters)
+        let hasLower = password.rangeOfCharacter(from: CharacterSet.lowercaseLetters)
+        let hasDigit = password.rangeOfCharacter(from: CharacterSet.decimalDigits)
+        return (!upperFlag || hasUpper != nil) &&
+            (!lowerFlag || hasLower != nil) &&
+            (!digitFlag || hasDigit != nil)
+    }
 
+    func generate() -> String {
         let uppers = ["A", "B", "C", "D", "E", "F", "G", "H", "J", "K", "L",
                       "M", "N", "P", "Q", "R", "S", "T", "U", "V", "W", "X",
                       "Y", "Z"]
@@ -52,13 +61,13 @@ struct Genpw: ParsableCommand {
         let digits = ["2", "3", "4", "5", "6", "7", "8", "9"]
 
         var candidates: [String] = []
-        if upper {
+        if upperFlag {
             candidates += uppers
         }
-        if lower {
+        if lowerFlag {
             candidates += lowers
         }
-        if digit {
+        if digitFlag {
             candidates += digits
         }
 
@@ -74,7 +83,18 @@ struct Genpw: ParsableCommand {
             pwChars.append(characters.remove(at: charIndex))
         }
         let password = pwChars.joined(separator: "")
+        return password
+    }
 
+    mutating func run() {
+        if bareLength != nil {
+            length = bareLength!
+        }
+
+        var password = ""
+        while !isAcceptable(password: password) {
+            password = generate()
+        }
         print(password)
     }
 }
