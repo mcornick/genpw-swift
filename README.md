@@ -32,8 +32,9 @@ generated password.
 
 ## Installation
 
-Although this should work on both macOS and Linux, it is currently only
-tested on macOS Catalina. You'll need Xcode installed, of course.
+This package targets Swift 5.2. On macOS, make sure you have Xcode 11.5
+installed. On Linux, make sure you've installed Swift 5.2 from the
+[Swift download site](https://swift.org/download/#releases).
 
 Run `swift build -c release` in the top level directory. Copy the generated
 `.build/release/genpw` binary to wherever you like.
