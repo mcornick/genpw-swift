@@ -1,4 +1,5 @@
-/* Copyright (c) 2020 Mark Cornick
+/*
+ Copyright (c) 2020 Mark Cornick
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -16,12 +17,15 @@
  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- SOFTWARE. */
+ SOFTWARE.
+ */
 
 import ArgumentParser
 import Foundation
 
+// The command, implemented with ArgumentParser.
 struct Genpw: ParsableCommand {
+    // ArgumentParser definitions.
     @Argument(help: .hidden)
     var bareLength: Int?
     @Option(help: "Length to generate.")
@@ -33,12 +37,23 @@ struct Genpw: ParsableCommand {
     @Flag(inversion: .prefixedNo, help: "Include digits.")
     var digit = true
 
+    /**
+     Validates the upper/lower/digit class inclusion flags.
+
+     - Throws: `ValidationError` if all three classes are absent.
+     */
+
     func validate() throws {
         guard upper || lower || digit else {
             throw ValidationError("Cannot exclude all three character classes.")
         }
     }
 
+    /**
+     Returns minimum length based on flags selected.
+
+     - Returns: An Int counting the flags selected.
+     */
     func minimumLength() -> Int {
         var minimum = 0
         if upper { minimum += 1 }
@@ -47,6 +62,11 @@ struct Genpw: ParsableCommand {
         return minimum
     }
 
+    /** Tests that all requested classes are present.
+     - Parameter password: The proposed password to check.
+
+     - Returns: A Bool indicating acceptability.
+     */
     func isAcceptable(password: String) -> Bool {
         let hasUpper = password.rangeOfCharacter(from: .uppercaseLetters)
         let hasLower = password.rangeOfCharacter(from: .lowercaseLetters)
@@ -57,11 +77,18 @@ struct Genpw: ParsableCommand {
         return upperOK && lowerOK && digitOK
     }
 
+    /** Generate a password.
+     - Throws: `ValidationError` if the length is too small.
+
+     - Returns: The password as a String.
+     */
     func generate() throws -> String {
+        // Validate length is at least minimum.
         guard length >= minimumLength() else {
             throw ValidationError("Length must be at least \(minimumLength()).")
         }
 
+        // The characters from which we assemble passwords.
         let uppers = ["A", "B", "C", "D", "E", "F", "G", "H", "J", "K", "L",
                       "M", "N", "P", "Q", "R", "S", "T", "U", "V", "W", "X",
                       "Y", "Z"]
@@ -70,35 +97,48 @@ struct Genpw: ParsableCommand {
                       "x", "y", "z"]
         let digits = ["2", "3", "4", "5", "6", "7", "8", "9"]
 
-        var candidates: [String] = []
-        if upper { candidates += uppers }
-        if lower { candidates += lowers }
-        if digit { candidates += digits }
+        // Combine the selected character classes to make a single array.
+        var selections: [String] = []
+        if upper { selections += uppers }
+        if lower { selections += lowers }
+        if digit { selections += digits }
 
-        var characters: [String] = []
-        let repeats = Int(length / candidates.count) + 1
+        // Assemble a pool large enough to accomodate the requested length.
+        var pool: [String] = []
+        let repeats = Int(length / selections.count) + 1
         for _ in 0 ..< repeats {
-            characters += candidates
+            pool += selections
         }
 
-        var pwChars: [String] = []
+        // Assemble a set of characters from the pool to make a password.
+        var password: [String] = []
         for _ in 0 ..< length {
-            let charIndex = Int.random(in: 0 ..< characters.count)
-            pwChars.append(characters.remove(at: charIndex))
+            let charIndex = Int.random(in: 0 ..< pool.count)
+            password.append(pool.remove(at: charIndex))
         }
-        let password = pwChars.joined(separator: "")
-        return password
+
+        // Return the password as a string.
+        return password.joined(separator: "")
     }
 
+    /**
+     Main function. Mutating because `bareLength` can override `length`.
+
+     - Throws: `ValidationError` if thrown in generate method.
+     */
     mutating func run() throws {
+        // Bare length overrides length option.
         if bareLength != nil {
             length = bareLength!
         }
 
+        // Generate passwords until we get an acceptable one.
         var password = ""
         while !isAcceptable(password: password) {
             password = try generate()
         }
+
+        // Print it.
         print(password)
     }
 }
