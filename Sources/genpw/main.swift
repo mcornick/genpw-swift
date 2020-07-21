@@ -38,12 +38,19 @@ struct Genpw: ParsableCommand {
     var digit = true
 
     /**
-     Validates the upper/lower/digit class inclusion flags.
+     Validates options and flags.
 
-     - Throws: `ValidationError` if all three classes are absent.
+     - Throws: `ValidationError` if length is too short or all three
+               character classes are excluded.
      */
 
     func validate() throws {
+        guard bareLength == nil || bareLength! >= minimumLength() else {
+            throw ValidationError("Length must be at least \(minimumLength()).")
+        }
+        guard length >= minimumLength() else {
+            throw ValidationError("Length must be at least \(minimumLength()).")
+        }
         guard upper || lower || digit else {
             throw ValidationError("Cannot exclude all three character classes.")
         }
@@ -115,21 +122,8 @@ struct Genpw: ParsableCommand {
         return password.joined(separator: "")
     }
 
-    /**
-     Main function. Mutating because `bareLength` can override `length`.
-
-     - Throws: `ValidationError` if the length is too small.
-     */
-    mutating func run() throws {
-        // Validate length is at least minimum.
-        // FIXME: This guard is here because it doesn't work when called in the
-        //        validate() function. Figure out why and move it there
-        //        if possible.
-
-        guard length >= minimumLength() else {
-            throw ValidationError("Length must be at least \(minimumLength()).")
-        }
-
+    /// Main function. Mutating because `bareLength` can override `length`.
+    mutating func run() {
         // Bare length overrides length option.
         if bareLength != nil {
             length = bareLength!

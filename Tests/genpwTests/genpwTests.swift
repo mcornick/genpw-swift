@@ -86,6 +86,16 @@ final class genpwTests: XCTestCase {
         XCTAssertEqual(8, output.count)
     }
 
+    func testBadBareLength() throws {
+        let (status, _) = try execute(arguments: ["eight"])
+        XCTAssertEqual(64, status)
+    }
+
+    func testBareLengthTooShort() throws {
+        let (status, _) = try execute(arguments: ["0"])
+        XCTAssertEqual(64, status)
+    }
+
     func testIsAcceptableNoUpperNoLower() throws {
         let (_, output) = try execute(arguments: ["--no-upper", "--no-lower"])
         let digits = output.rangeOfCharacter(from: .decimalDigits)
@@ -160,6 +170,8 @@ final class genpwTests: XCTestCase {
         ("testBadFlags", testBadFlags),
         ("testBareLength", testBareLength),
         ("testBareLengthOverridesLengthOption", testBareLengthOverridesLengthOption),
+        ("testBadBareLength", testBadBareLength),
+        ("testBareLengthTooShort", testBareLengthTooShort),
         ("testIsAcceptableNoUpperNoLower", testIsAcceptableNoUpperNoLower),
         ("testIsAcceptableNoUpperNoDigit", testIsAcceptableNoUpperNoDigit),
         ("testIsAcceptableNoDigitNoLower", testIsAcceptableNoDigitNoLower),
