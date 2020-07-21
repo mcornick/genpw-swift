@@ -78,16 +78,10 @@ struct Genpw: ParsableCommand {
     }
 
     /** Generate a password.
-     - Throws: `ValidationError` if the length is too small.
 
      - Returns: The password as a String.
      */
-    func generate() throws -> String {
-        // Validate length is at least minimum.
-        guard length >= minimumLength() else {
-            throw ValidationError("Length must be at least \(minimumLength()).")
-        }
-
+    func generate() -> String {
         // The characters from which we assemble passwords.
         let uppers = ["A", "B", "C", "D", "E", "F", "G", "H", "J", "K", "L",
                       "M", "N", "P", "Q", "R", "S", "T", "U", "V", "W", "X",
@@ -124,9 +118,18 @@ struct Genpw: ParsableCommand {
     /**
      Main function. Mutating because `bareLength` can override `length`.
 
-     - Throws: `ValidationError` if thrown in generate method.
+     - Throws: `ValidationError` if the length is too small.
      */
     mutating func run() throws {
+        // Validate length is at least minimum.
+        // FIXME: This guard is here because it doesn't work when called in the
+        //        validate() function. Figure out why and move it there
+        //        if possible.
+
+        guard length >= minimumLength() else {
+            throw ValidationError("Length must be at least \(minimumLength()).")
+        }
+
         // Bare length overrides length option.
         if bareLength != nil {
             length = bareLength!
@@ -135,7 +138,7 @@ struct Genpw: ParsableCommand {
         // Generate passwords until we get an acceptable one.
         var password = ""
         while !isAcceptable(password: password) {
-            password = try generate()
+            password = generate()
         }
 
         // Print it.
