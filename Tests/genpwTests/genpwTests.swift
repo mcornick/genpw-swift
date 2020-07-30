@@ -38,114 +38,135 @@ final class genpwTests: XCTestCase {
         return (process.terminationStatus, password)
     }
 
-    func testNoArguments() throws {
+    /// Assert that no provided length uses a default length.
+    func testDefaultLength() throws {
         let (_, output) = try execute(arguments: [])
         XCTAssertEqual(16, output.count)
     }
 
-    func testLengthOption() throws {
+    /// Assert that a valid provided length uses that length.
+    func testValidLengthOption() throws {
         let (_, output) = try execute(arguments: ["--length", "8"])
         XCTAssertEqual(8, output.count)
     }
 
-    func testBadLength() throws {
+    /// Assert that an invalid provided length fails.
+    func testInvalidLengthOption() throws {
         let (status, _) = try execute(arguments: ["--length", "eight"])
         XCTAssertEqual(64, status)
     }
 
-    func testUpperFlag() throws {
+    /// Assert that a length that is too short fails.
+    func testLengthOptionTooShort() throws {
+        let (status, _) = try execute(arguments: ["--length", "0"])
+        XCTAssertEqual(64, status)
+    }
+
+    /// Assert that --no-upper excludes uppercase and includes lowercase and digits.
+    func testNoUpperFlag() throws {
         let (_, output) = try execute(arguments: ["--no-upper"])
         let uppers = output.rangeOfCharacter(from: .uppercaseLetters)
-        XCTAssertNil(uppers)
-    }
-
-    func testLowerFlag() throws {
-        let (_, output) = try execute(arguments: ["--no-lower"])
         let lowers = output.rangeOfCharacter(from: .lowercaseLetters)
-        XCTAssertNil(lowers)
+        let digits = output.rangeOfCharacter(from: .decimalDigits)
+        XCTAssertNil(uppers)
+        XCTAssertNotNil(lowers)
+        XCTAssertNotNil(digits)
     }
 
-    func testDigitFlag() throws {
-        let (_, output) = try execute(arguments: ["--no-digit"])
+    /// Assert that --no-lower excludes lowercase and includes uppercase and digits.
+    func testNoLowerFlag() throws {
+        let (_, output) = try execute(arguments: ["--no-lower"])
+        let uppers = output.rangeOfCharacter(from: .uppercaseLetters)
+        let lowers = output.rangeOfCharacter(from: .lowercaseLetters)
         let digits = output.rangeOfCharacter(from: .decimalDigits)
+        XCTAssertNotNil(uppers)
+        XCTAssertNil(lowers)
+        XCTAssertNotNil(digits)
+    }
+
+    /// Assert that --no-digit excludes digits and includes lowercase and uppercase.
+    func testNoDigitFlag() throws {
+        let (_, output) = try execute(arguments: ["--no-digit"])
+        let uppers = output.rangeOfCharacter(from: .uppercaseLetters)
+        let lowers = output.rangeOfCharacter(from: .lowercaseLetters)
+        let digits = output.rangeOfCharacter(from: .decimalDigits)
+        XCTAssertNotNil(uppers)
+        XCTAssertNotNil(lowers)
         XCTAssertNil(digits)
     }
 
-    func testBadFlags() throws {
+    /// Assert that --no-upper --no-lower excludes uppercase and lowercase and includes digits.
+    func testNoUpperFlagNoLowerFlag() throws {
+        let (_, output) = try execute(arguments: ["--no-upper", "--no-lower"])
+        let uppers = output.rangeOfCharacter(from: .uppercaseLetters)
+        let lowers = output.rangeOfCharacter(from: .lowercaseLetters)
+        let digits = output.rangeOfCharacter(from: .decimalDigits)
+        XCTAssertNil(uppers)
+        XCTAssertNil(lowers)
+        XCTAssertNotNil(digits)
+    }
+
+    /// Assert that --no-upper --no-digit excludes uppercase and digits and includes lowercase.
+    func testNoUpperFlagNoDigitFlag() throws {
+        let (_, output) = try execute(arguments: ["--no-upper", "--no-digit"])
+        let uppers = output.rangeOfCharacter(from: .uppercaseLetters)
+        let lowers = output.rangeOfCharacter(from: .lowercaseLetters)
+        let digits = output.rangeOfCharacter(from: .decimalDigits)
+        XCTAssertNil(uppers)
+        XCTAssertNotNil(lowers)
+        XCTAssertNil(digits)
+    }
+
+    /// Assert that --no-digit --no-lower excludes digits and lowercase and includes uppercase.
+    func testNoDigitFlagNoLowerFlag() throws {
+        let (_, output) = try execute(arguments: ["--no-digit", "--no-lower"])
+        let uppers = output.rangeOfCharacter(from: .uppercaseLetters)
+        let lowers = output.rangeOfCharacter(from: .lowercaseLetters)
+        let digits = output.rangeOfCharacter(from: .decimalDigits)
+        XCTAssertNotNil(uppers)
+        XCTAssertNil(lowers)
+        XCTAssertNil(digits)
+    }
+
+    /// Assert that none of --no-upper, --no-lower, --no-digit includes all three classes.
+    func testDefaultFlags() throws {
+        let (_, output) = try execute(arguments: [])
+        let uppers = output.rangeOfCharacter(from: .uppercaseLetters)
+        let lowers = output.rangeOfCharacter(from: .lowercaseLetters)
+        let digits = output.rangeOfCharacter(from: .decimalDigits)
+        XCTAssertNotNil(uppers)
+        XCTAssertNotNil(lowers)
+        XCTAssertNotNil(digits)
+    }
+
+    /// Assert that all of --no-upper, --no-lower, --no-digit fails.
+    func testNoUpperFlagNoLowerFlagNoDigitFlag() throws {
         let (status, _) = try execute(arguments: ["--no-upper", "--no-lower", "--no-digit"])
         XCTAssertEqual(64, status)
     }
 
+    /// Assert that a valid bare length is accepted.
     func testBareLength() throws {
         let (_, output) = try execute(arguments: ["8"])
         XCTAssertEqual(8, output.count)
     }
 
+    /// Assert that a valid bare length overrides the --length flag.
     func testBareLengthOverridesLengthOption() throws {
         let (_, output) = try execute(arguments: ["8", "--length", "12"])
         XCTAssertEqual(8, output.count)
     }
 
-    func testBadBareLength() throws {
+    /// Assert that an invalid bare length fails.
+    func testInvalidBareLength() throws {
         let (status, _) = try execute(arguments: ["eight"])
         XCTAssertEqual(64, status)
     }
 
-    func testBareLengthTooShort() throws {
+    /// Assert that a bare length which is too short fails.
+    func testBareLengthLengthOptionTooShort() throws {
         let (status, _) = try execute(arguments: ["0"])
         XCTAssertEqual(64, status)
-    }
-
-    func testIsAcceptableNoUpperNoLower() throws {
-        let (_, output) = try execute(arguments: ["--no-upper", "--no-lower"])
-        let digits = output.rangeOfCharacter(from: .decimalDigits)
-        XCTAssertNotNil(digits)
-    }
-
-    func testIsAcceptableNoUpperNoDigit() throws {
-        let (_, output) = try execute(arguments: ["--no-upper", "--no-digit"])
-        let lowers = output.rangeOfCharacter(from: .lowercaseLetters)
-        XCTAssertNotNil(lowers)
-    }
-
-    func testIsAcceptableNoDigitNoLower() throws {
-        let (_, output) = try execute(arguments: ["--no-digit", "--no-lower"])
-        let uppers = output.rangeOfCharacter(from: .uppercaseLetters)
-        XCTAssertNotNil(uppers)
-    }
-
-    func testIsAcceptableNoDigit() throws {
-        let (_, output) = try execute(arguments: ["--no-digit"])
-        let uppers = output.rangeOfCharacter(from: .uppercaseLetters)
-        let lowers = output.rangeOfCharacter(from: .lowercaseLetters)
-        XCTAssertNotNil(uppers)
-        XCTAssertNotNil(lowers)
-    }
-
-    func testIsAcceptableNoUpper() throws {
-        let (_, output) = try execute(arguments: ["--no-upper"])
-        let digits = output.rangeOfCharacter(from: .decimalDigits)
-        let lowers = output.rangeOfCharacter(from: .lowercaseLetters)
-        XCTAssertNotNil(digits)
-        XCTAssertNotNil(lowers)
-    }
-
-    func testIsAcceptableNoLower() throws {
-        let (_, output) = try execute(arguments: ["--no-lower"])
-        let uppers = output.rangeOfCharacter(from: .uppercaseLetters)
-        let digits = output.rangeOfCharacter(from: .decimalDigits)
-        XCTAssertNotNil(uppers)
-        XCTAssertNotNil(digits)
-    }
-
-    func testIsAcceptableAllThree() throws {
-        let (_, output) = try execute(arguments: [])
-        let uppers = output.rangeOfCharacter(from: .uppercaseLetters)
-        let lowers = output.rangeOfCharacter(from: .lowercaseLetters)
-        let digits = output.rangeOfCharacter(from: .decimalDigits)
-        XCTAssertNotNil(uppers)
-        XCTAssertNotNil(lowers)
-        XCTAssertNotNil(digits)
     }
 
     /// Returns path to the built products directory.
@@ -161,23 +182,21 @@ final class genpwTests: XCTestCase {
     }
 
     static var allTests = [
-        ("testNoArguments", testNoArguments),
-        ("testLengthOption", testLengthOption),
-        ("testBadLength", testBadLength),
-        ("testUpperFlag", testUpperFlag),
-        ("testLowerFlag", testLowerFlag),
-        ("testDigitFlag", testDigitFlag),
-        ("testBadFlags", testBadFlags),
         ("testBareLength", testBareLength),
+        ("testBareLengthLengthOptionTooShort", testBareLengthLengthOptionTooShort),
         ("testBareLengthOverridesLengthOption", testBareLengthOverridesLengthOption),
-        ("testBadBareLength", testBadBareLength),
-        ("testBareLengthTooShort", testBareLengthTooShort),
-        ("testIsAcceptableNoUpperNoLower", testIsAcceptableNoUpperNoLower),
-        ("testIsAcceptableNoUpperNoDigit", testIsAcceptableNoUpperNoDigit),
-        ("testIsAcceptableNoDigitNoLower", testIsAcceptableNoDigitNoLower),
-        ("testIsAcceptableNoDigit", testIsAcceptableNoDigit),
-        ("testIsAcceptableNoUpper", testIsAcceptableNoUpper),
-        ("testIsAcceptableNoLower", testIsAcceptableNoLower),
-        ("testIsAcceptableAllThree", testIsAcceptableAllThree),
+        ("testDefaultFlags", testDefaultFlags),
+        ("testDefaultLength", testDefaultLength),
+        ("testInvalidBareLength", testInvalidBareLength),
+        ("testInvalidLengthOption", testInvalidLengthOption),
+        ("testLengthOptionTooShort", testLengthOptionTooShort),
+        ("testNoDigitFlag", testNoDigitFlag),
+        ("testNoDigitFlagNoLowerFlag", testNoDigitFlagNoLowerFlag),
+        ("testNoLowerFlag", testNoLowerFlag),
+        ("testNoUpperFlag", testNoUpperFlag),
+        ("testNoUpperFlagNoDigitFlag", testNoUpperFlagNoDigitFlag),
+        ("testNoUpperFlagNoLowerFlag", testNoUpperFlagNoLowerFlag),
+        ("testNoUpperFlagNoLowerFlagNoDigitFlag", testNoUpperFlagNoLowerFlagNoDigitFlag),
+        ("testValidLengthOption", testValidLengthOption),
     ]
 }
