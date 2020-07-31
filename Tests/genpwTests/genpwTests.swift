@@ -62,81 +62,56 @@ final class genpwTests: XCTestCase {
         XCTAssertEqual(64, status)
     }
 
+    /// Helper for flag tests.
+    func doFlagAssertions(password: String, wantUpper: Bool, wantLower: Bool, wantDigit: Bool) {
+        let hasUpper = password.rangeOfCharacter(from: .uppercaseLetters) != nil ? true : false
+        let hasLower = password.rangeOfCharacter(from: .lowercaseLetters) != nil ? true : false
+        let hasDigit = password.rangeOfCharacter(from: .decimalDigits) != nil ? true : false
+        XCTAssertEqual(wantUpper, hasUpper)
+        XCTAssertEqual(wantLower, hasLower)
+        XCTAssertEqual(wantDigit, hasDigit)
+    }
+
     /// Assert that --no-upper excludes uppercase and includes lowercase and digits.
     func testNoUpperFlag() throws {
         let (_, output) = try execute(arguments: ["--no-upper"])
-        let uppers = output.rangeOfCharacter(from: .uppercaseLetters)
-        let lowers = output.rangeOfCharacter(from: .lowercaseLetters)
-        let digits = output.rangeOfCharacter(from: .decimalDigits)
-        XCTAssertNil(uppers)
-        XCTAssertNotNil(lowers)
-        XCTAssertNotNil(digits)
+        doFlagAssertions(password: output, wantUpper: false, wantLower: true, wantDigit: true)
     }
 
-    /// Assert that --no-lower excludes lowercase and includes uppercase and digits.
+    /// Assert that --no-lower excludes lowercase and includes uppercase and hasDigit.
     func testNoLowerFlag() throws {
         let (_, output) = try execute(arguments: ["--no-lower"])
-        let uppers = output.rangeOfCharacter(from: .uppercaseLetters)
-        let lowers = output.rangeOfCharacter(from: .lowercaseLetters)
-        let digits = output.rangeOfCharacter(from: .decimalDigits)
-        XCTAssertNotNil(uppers)
-        XCTAssertNil(lowers)
-        XCTAssertNotNil(digits)
+        doFlagAssertions(password: output, wantUpper: true, wantLower: false, wantDigit: true)
     }
 
-    /// Assert that --no-digit excludes digits and includes lowercase and uppercase.
+    /// Assert that --no-digit excludes hasDigit and includes lowercase and uppercase.
     func testNoDigitFlag() throws {
         let (_, output) = try execute(arguments: ["--no-digit"])
-        let uppers = output.rangeOfCharacter(from: .uppercaseLetters)
-        let lowers = output.rangeOfCharacter(from: .lowercaseLetters)
-        let digits = output.rangeOfCharacter(from: .decimalDigits)
-        XCTAssertNotNil(uppers)
-        XCTAssertNotNil(lowers)
-        XCTAssertNil(digits)
+        doFlagAssertions(password: output, wantUpper: true, wantLower: true, wantDigit: false)
     }
 
     /// Assert that --no-upper --no-lower excludes uppercase and lowercase and includes digits.
     func testNoUpperFlagNoLowerFlag() throws {
         let (_, output) = try execute(arguments: ["--no-upper", "--no-lower"])
-        let uppers = output.rangeOfCharacter(from: .uppercaseLetters)
-        let lowers = output.rangeOfCharacter(from: .lowercaseLetters)
-        let digits = output.rangeOfCharacter(from: .decimalDigits)
-        XCTAssertNil(uppers)
-        XCTAssertNil(lowers)
-        XCTAssertNotNil(digits)
+        doFlagAssertions(password: output, wantUpper: false, wantLower: false, wantDigit: true)
     }
 
     /// Assert that --no-upper --no-digit excludes uppercase and digits and includes lowercase.
     func testNoUpperFlagNoDigitFlag() throws {
         let (_, output) = try execute(arguments: ["--no-upper", "--no-digit"])
-        let uppers = output.rangeOfCharacter(from: .uppercaseLetters)
-        let lowers = output.rangeOfCharacter(from: .lowercaseLetters)
-        let digits = output.rangeOfCharacter(from: .decimalDigits)
-        XCTAssertNil(uppers)
-        XCTAssertNotNil(lowers)
-        XCTAssertNil(digits)
+        doFlagAssertions(password: output, wantUpper: false, wantLower: true, wantDigit: false)
     }
 
     /// Assert that --no-digit --no-lower excludes digits and lowercase and includes uppercase.
     func testNoDigitFlagNoLowerFlag() throws {
         let (_, output) = try execute(arguments: ["--no-digit", "--no-lower"])
-        let uppers = output.rangeOfCharacter(from: .uppercaseLetters)
-        let lowers = output.rangeOfCharacter(from: .lowercaseLetters)
-        let digits = output.rangeOfCharacter(from: .decimalDigits)
-        XCTAssertNotNil(uppers)
-        XCTAssertNil(lowers)
-        XCTAssertNil(digits)
+        doFlagAssertions(password: output, wantUpper: true, wantLower: false, wantDigit: false)
     }
 
     /// Assert that none of --no-upper, --no-lower, --no-digit includes all three classes.
     func testDefaultFlags() throws {
         let (_, output) = try execute(arguments: [])
-        let uppers = output.rangeOfCharacter(from: .uppercaseLetters)
-        let lowers = output.rangeOfCharacter(from: .lowercaseLetters)
-        let digits = output.rangeOfCharacter(from: .decimalDigits)
-        XCTAssertNotNil(uppers)
-        XCTAssertNotNil(lowers)
-        XCTAssertNotNil(digits)
+        doFlagAssertions(password: output, wantUpper: true, wantLower: true, wantDigit: true)
     }
 
     /// Assert that all of --no-upper, --no-lower, --no-digit fails.
