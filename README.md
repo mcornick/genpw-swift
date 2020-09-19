@@ -32,8 +32,9 @@ generated password.
 
 ## Installation
 
-This package targets Swift 5.2. On macOS, make sure you have Xcode 11.5
-installed. On Linux, make sure you've installed Swift 5.2 from the
+This package targets Swift 5.2 and higher. On macOS, make sure you have
+Xcode 11.5 or higher installed. On Linux, make sure you've installed
+Swift 5.2 or higher from the
 [Swift download site](https://swift.org/download/#releases).
 
 Run `swift build -c release` in the top level directory. Copy the generated
