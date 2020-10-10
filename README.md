@@ -6,15 +6,12 @@ a 1:1 port. Nevertheless, aside from a few differences in command line
 flags, it now has feature parity with the Go version.
 
 Passwords are, by default, chosen from the union of three character
-classes:
+classes: upper-case letters, lower-case letters, and digits.
 
-- all upper-case letters except I and O
-- all lower-case letters except l
-- the digits 2 through 9
-
-0 and O are not used to avoid confusion with each other when passwords
-are displayed in sans-serif fonts. I, l, and 1 are not used for the same
-reason.
+(Previous versions did not use 0, O, I, l, or 1; this was also the
+behavior of the Go version. This was to avoid confusion when passwords
+are displayed in sans-serif fonts. I no longer consider that important,
+so this version uses all letters and digits.)
 
 Options can be given to omit any one or any two of these character
 classes. For instance, you can omit uppercase letters and digits by

@@ -90,13 +90,13 @@ struct Genpw: ParsableCommand {
      */
     func generate() -> String {
         // The characters from which we assemble passwords.
-        let uppers = ["A", "B", "C", "D", "E", "F", "G", "H", "J", "K", "L",
-                      "M", "N", "P", "Q", "R", "S", "T", "U", "V", "W", "X",
-                      "Y", "Z"]
+        let uppers = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K",
+                      "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V",
+                      "W", "X", "Y", "Z"]
         let lowers = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k",
-                      "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w",
-                      "x", "y", "z"]
-        let digits = ["2", "3", "4", "5", "6", "7", "8", "9"]
+                      "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v",
+                      "w", "x", "y", "z"]
+        let digits = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
 
         // Combine the selected character classes to make a single array.
         var selections: [String] = []
