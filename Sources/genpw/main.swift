@@ -26,8 +26,6 @@ import Foundation
 // The command, implemented with ArgumentParser.
 struct Genpw: ParsableCommand {
     // ArgumentParser definitions.
-    @Argument(help: .hidden)
-    var bareLength: Int?
     @Option(help: "Length to generate.")
     var length = 16
     @Flag(inversion: .prefixedNo, help: "Include uppercase letters.")
@@ -45,9 +43,6 @@ struct Genpw: ParsableCommand {
      */
 
     func validate() throws {
-        guard bareLength == nil || bareLength! >= minimumLength() else {
-            throw ValidationError("Length must be at least \(minimumLength()).")
-        }
         guard length >= minimumLength() else {
             throw ValidationError("Length must be at least \(minimumLength()).")
         }
@@ -122,13 +117,8 @@ struct Genpw: ParsableCommand {
         return password.joined(separator: "")
     }
 
-    /// Main function. Mutating because `bareLength` can override `length`.
-    mutating func run() {
-        // Bare length overrides length option.
-        if bareLength != nil {
-            length = bareLength!
-        }
-
+    /// Main function.
+    func run() {
         // Generate passwords until we get an acceptable one.
         var password = ""
         while !isAcceptable(password: password) {

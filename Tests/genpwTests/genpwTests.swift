@@ -120,30 +120,6 @@ final class genpwTests: XCTestCase {
         XCTAssertEqual(64, status)
     }
 
-    /// Assert that a valid bare length is accepted.
-    func testBareLength() throws {
-        let (_, output) = try execute(arguments: ["8"])
-        XCTAssertEqual(8, output.count)
-    }
-
-    /// Assert that a valid bare length overrides the --length flag.
-    func testBareLengthOverridesLengthOption() throws {
-        let (_, output) = try execute(arguments: ["8", "--length", "12"])
-        XCTAssertEqual(8, output.count)
-    }
-
-    /// Assert that an invalid bare length fails.
-    func testInvalidBareLength() throws {
-        let (status, _) = try execute(arguments: ["eight"])
-        XCTAssertEqual(64, status)
-    }
-
-    /// Assert that a bare length which is too short fails.
-    func testBareLengthLengthOptionTooShort() throws {
-        let (status, _) = try execute(arguments: ["0"])
-        XCTAssertEqual(64, status)
-    }
-
     /// Returns path to the built products directory.
     var productsDirectory: URL {
         #if os(macOS)
@@ -157,12 +133,8 @@ final class genpwTests: XCTestCase {
     }
 
     static var allTests = [
-        ("testBareLength", testBareLength),
-        ("testBareLengthLengthOptionTooShort", testBareLengthLengthOptionTooShort),
-        ("testBareLengthOverridesLengthOption", testBareLengthOverridesLengthOption),
         ("testDefaultFlags", testDefaultFlags),
         ("testDefaultLength", testDefaultLength),
-        ("testInvalidBareLength", testInvalidBareLength),
         ("testInvalidLengthOption", testInvalidLengthOption),
         ("testLengthOptionTooShort", testLengthOptionTooShort),
         ("testNoDigitFlag", testNoDigitFlag),
