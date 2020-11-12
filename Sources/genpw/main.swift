@@ -26,13 +26,17 @@ import Foundation
 // The command, implemented with ArgumentParser.
 struct Genpw: ParsableCommand {
     // ArgumentParser definitions.
-    @Option(help: "Length to generate.")
+    @Option(name: [.short, .long],
+            help: "Length to generate.")
     var length = 16
-    @Flag(help: "Exclude uppercase letters.")
+    @Flag(name: [.customShort("U"), .long],
+          help: "Exclude uppercase letters.")
     var noUpper = false
-    @Flag(help: "Exclude lowercase letters.")
+    @Flag(name: [.customShort("u"), .long],
+          help: "Exclude lowercase letters.")
     var noLower = false
-    @Flag(help: "Exclude digits.")
+    @Flag(name: [.customShort("d"), .long],
+          help: "Exclude digits.")
     var noDigit = false
 
     /**

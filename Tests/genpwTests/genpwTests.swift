@@ -120,6 +120,66 @@ final class genpwTests: XCTestCase {
         XCTAssertEqual(64, status)
     }
 
+    /// Assert that a valid provided length uses that length.
+    func testValidShortLengthOption() throws {
+        let (_, output) = try execute(arguments: ["-l", "8"])
+        XCTAssertEqual(8, output.count)
+    }
+
+    /// Assert that an invalid provided length fails.
+    func testInvalidShortLengthOption() throws {
+        let (status, _) = try execute(arguments: ["-l", "eight"])
+        XCTAssertEqual(64, status)
+    }
+
+    /// Assert that a length that is too short fails.
+    func testShortLengthOptionTooShort() throws {
+        let (status, _) = try execute(arguments: ["-l", "0"])
+        XCTAssertEqual(64, status)
+    }
+
+    /// Assert that -U excludes uppercase and includes lowercase and digits.
+    func testShortNoUpperFlag() throws {
+        let (_, output) = try execute(arguments: ["-U"])
+        doFlagAssertions(password: output, wantUpper: false, wantLower: true, wantDigit: true)
+    }
+
+    /// Assert that -u excludes lowercase and includes uppercase and hasDigit.
+    func testShortNoLowerFlag() throws {
+        let (_, output) = try execute(arguments: ["-u"])
+        doFlagAssertions(password: output, wantUpper: true, wantLower: false, wantDigit: true)
+    }
+
+    /// Assert that -d excludes hasDigit and includes lowercase and uppercase.
+    func testShortNoDigitFlag() throws {
+        let (_, output) = try execute(arguments: ["-d"])
+        doFlagAssertions(password: output, wantUpper: true, wantLower: true, wantDigit: false)
+    }
+
+    /// Assert that -U -u excludes uppercase and lowercase and includes digits.
+    func testShortNoUpperFlagNoLowerFlag() throws {
+        let (_, output) = try execute(arguments: ["-U", "-u"])
+        doFlagAssertions(password: output, wantUpper: false, wantLower: false, wantDigit: true)
+    }
+
+    /// Assert that -U -d excludes uppercase and digits and includes lowercase.
+    func testShortNoUpperFlagNoDigitFlag() throws {
+        let (_, output) = try execute(arguments: ["-U", "-d"])
+        doFlagAssertions(password: output, wantUpper: false, wantLower: true, wantDigit: false)
+    }
+
+    /// Assert that -d -u excludes digits and lowercase and includes uppercase.
+    func testShortNoDigitFlagNoLowerFlag() throws {
+        let (_, output) = try execute(arguments: ["-d", "-u"])
+        doFlagAssertions(password: output, wantUpper: true, wantLower: false, wantDigit: false)
+    }
+
+    /// Assert that all of -U, -u, -d fails.
+    func testShortNoUpperFlagNoLowerFlagNoDigitFlag() throws {
+        let (status, _) = try execute(arguments: ["-U", "-u", "-d"])
+        XCTAssertEqual(64, status)
+    }
+
     /// Returns path to the built products directory.
     var productsDirectory: URL {
         #if os(macOS)
@@ -145,5 +205,15 @@ final class genpwTests: XCTestCase {
         ("testNoUpperFlagNoLowerFlag", testNoUpperFlagNoLowerFlag),
         ("testNoUpperFlagNoLowerFlagNoDigitFlag", testNoUpperFlagNoLowerFlagNoDigitFlag),
         ("testValidLengthOption", testValidLengthOption),
+        ("testInvalidShortLengthOption", testInvalidShortLengthOption),
+        ("testShortLengthOptionTooShort", testShortLengthOptionTooShort),
+        ("testShortNoDigitFlag", testShortNoDigitFlag),
+        ("testShortNoDigitFlagNoLowerFlag", testShortNoDigitFlagNoLowerFlag),
+        ("testShortNoLowerFlag", testShortNoLowerFlag),
+        ("testShortNoUpperFlag", testShortNoUpperFlag),
+        ("testShortNoUpperFlagNoDigitFlag", testShortNoUpperFlagNoDigitFlag),
+        ("testShortNoUpperFlagNoLowerFlag", testShortNoUpperFlagNoLowerFlag),
+        ("testShortNoUpperFlagNoLowerFlagNoDigitFlag", testShortNoUpperFlagNoLowerFlagNoDigitFlag),
+        ("testValidShortLengthOption", testValidShortLengthOption),
     ]
 }

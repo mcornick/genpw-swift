@@ -44,10 +44,10 @@ $ genpw --help
 USAGE: genpw [--length <length>] [--no-upper] [--no-lower] [--no-digit]
 
 OPTIONS:
-  --length <length>       Length to generate. (default: 16)
-  --no-upper              Exclude uppercase letters.
-  --no-lower              Exclude lowercase letters.
-  --no-digit              Exclude digits.
+  -l, --length <length>   Length to generate. (default: 16)
+  -U, --no-upper          Exclude uppercase letters.
+  -u, --no-lower          Exclude lowercase letters.
+  -d, --no-digit          Exclude digits.
   -h, --help              Show help information.
 
 $ genpw
