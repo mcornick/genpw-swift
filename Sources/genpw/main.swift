@@ -28,12 +28,12 @@ struct Genpw: ParsableCommand {
     // ArgumentParser definitions.
     @Option(help: "Length to generate.")
     var length = 16
-    @Flag(inversion: .prefixedNo, help: "Include uppercase letters.")
-    var upper = true
-    @Flag(inversion: .prefixedNo, help: "Include lowercase letters.")
-    var lower = true
-    @Flag(inversion: .prefixedNo, help: "Include digits.")
-    var digit = true
+    @Flag(help: "Exclude uppercase letters.")
+    var noUpper = false
+    @Flag(help: "Exclude lowercase letters.")
+    var noLower = false
+    @Flag(help: "Exclude digits.")
+    var noDigit = false
 
     /**
      Validates options and flags.
@@ -46,7 +46,7 @@ struct Genpw: ParsableCommand {
         guard length >= minimumLength() else {
             throw ValidationError("Length must be at least \(minimumLength()).")
         }
-        guard upper || lower || digit else {
+        guard !noUpper || !noLower || !noDigit else {
             throw ValidationError("Cannot exclude all three character classes.")
         }
     }
@@ -58,9 +58,9 @@ struct Genpw: ParsableCommand {
      */
     func minimumLength() -> Int {
         var minimum = 0
-        if upper { minimum += 1 }
-        if lower { minimum += 1 }
-        if digit { minimum += 1 }
+        if !noUpper { minimum += 1 }
+        if !noLower { minimum += 1 }
+        if !noDigit { minimum += 1 }
         return minimum
     }
 
@@ -73,9 +73,9 @@ struct Genpw: ParsableCommand {
         let hasUpper = password.rangeOfCharacter(from: .uppercaseLetters)
         let hasLower = password.rangeOfCharacter(from: .lowercaseLetters)
         let hasDigit = password.rangeOfCharacter(from: .decimalDigits)
-        let upperOK = (!upper || hasUpper != nil)
-        let lowerOK = (!lower || hasLower != nil)
-        let digitOK = (!digit || hasDigit != nil)
+        let upperOK = (noUpper || hasUpper != nil)
+        let lowerOK = (noLower || hasLower != nil)
+        let digitOK = (noDigit || hasDigit != nil)
         return upperOK && lowerOK && digitOK
     }
 
@@ -95,9 +95,9 @@ struct Genpw: ParsableCommand {
 
         // Combine the selected character classes to make a single array.
         var selections: [String] = []
-        if upper { selections += uppers }
-        if lower { selections += lowers }
-        if digit { selections += digits }
+        if !noUpper { selections += uppers }
+        if !noLower { selections += lowers }
+        if !noDigit { selections += digits }
 
         // Assemble a pool large enough to accomodate the requested length.
         var pool: [String] = []

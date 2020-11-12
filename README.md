@@ -40,14 +40,14 @@ Run `swift build -c release` in the top level directory. Copy the generated
 ## Usage
 
 ```bash
-$ genpw -help
-USAGE: genpw [--length <length>] [--upper] [--no-upper] [--lower] [--no-lower] [--digit] [--no-digit]
+$ genpw --help
+USAGE: genpw [--length <length>] [--no-upper] [--no-lower] [--no-digit]
 
 OPTIONS:
   --length <length>       Length to generate. (default: 16)
-  --upper/--no-upper      Include uppercase letters. (default: true)
-  --lower/--no-lower      Include lowercase letters. (default: true)
-  --digit/--no-digit      Include digits. (default: true)
+  --no-upper              Exclude uppercase letters.
+  --no-lower              Exclude lowercase letters.
+  --no-digit              Exclude digits.
   -h, --help              Show help information.
 
 $ genpw
