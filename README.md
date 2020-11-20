@@ -29,9 +29,10 @@ generated password.
 
 ## Installation
 
-This package targets Swift 5.2 and higher. On macOS, make sure you have
-Xcode 11.5 or higher installed. On Linux, make sure you've installed
-Swift 5.2 or higher from the
+This package targets Swift 5.2/Xcode 11 and higher. To build universal
+macOS binaries, Swift 5.3/Xcode 12 is required.
+
+On Linux, make sure you've installed Swift 5.2 or higher from the
 [Swift download site](https://swift.org/download/#releases).
 
 ### Single-architecture build
