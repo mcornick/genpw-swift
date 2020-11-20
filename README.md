@@ -34,8 +34,16 @@ Xcode 11.5 or higher installed. On Linux, make sure you've installed
 Swift 5.2 or higher from the
 [Swift download site](https://swift.org/download/#releases).
 
+### Single-architecture build
+
 Run `swift build -c release` in the top level directory. Copy the generated
 `.build/release/genpw` binary to wherever you like.
+
+### Universal build
+
+Run `swift build -c release --arch arm64 --arch x86_64` in the top level
+directory. Copy the generated `.build/apple/Products/Release/genpw` binary
+to wherever you like.
 
 ## Usage
 
