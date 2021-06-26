@@ -78,7 +78,7 @@ final class genpwTests: XCTestCase {
         doFlagAssertions(password: output, wantUpper: false, wantLower: true, wantDigit: true)
     }
 
-    /// Assert that --no-lower excludes lowercase and includes uppercase and hasDigit.
+    /// Assert that --no-lower excludes lowercase and includes uppercase and digits.
     func testNoLowerFlag() throws {
         let (_, output) = try execute(arguments: ["--no-lower"])
         doFlagAssertions(password: output, wantUpper: true, wantLower: false, wantDigit: true)
@@ -193,27 +193,27 @@ final class genpwTests: XCTestCase {
     }
 
     static var allTests = [
-        ("testDefaultFlags", testDefaultFlags),
-        ("testDefaultLength", testDefaultLength),
-        ("testInvalidLengthOption", testInvalidLengthOption),
-        ("testLengthOptionTooShort", testLengthOptionTooShort),
-        ("testNoDigitFlag", testNoDigitFlag),
-        ("testNoDigitFlagNoLowerFlag", testNoDigitFlagNoLowerFlag),
-        ("testNoLowerFlag", testNoLowerFlag),
-        ("testNoUpperFlag", testNoUpperFlag),
-        ("testNoUpperFlagNoDigitFlag", testNoUpperFlagNoDigitFlag),
-        ("testNoUpperFlagNoLowerFlag", testNoUpperFlagNoLowerFlag),
-        ("testNoUpperFlagNoLowerFlagNoDigitFlag", testNoUpperFlagNoLowerFlagNoDigitFlag),
-        ("testValidLengthOption", testValidLengthOption),
-        ("testInvalidShortLengthOption", testInvalidShortLengthOption),
-        ("testShortLengthOptionTooShort", testShortLengthOptionTooShort),
-        ("testShortNoDigitFlag", testShortNoDigitFlag),
-        ("testShortNoDigitFlagNoLowerFlag", testShortNoDigitFlagNoLowerFlag),
-        ("testShortNoLowerFlag", testShortNoLowerFlag),
-        ("testShortNoUpperFlag", testShortNoUpperFlag),
-        ("testShortNoUpperFlagNoDigitFlag", testShortNoUpperFlagNoDigitFlag),
-        ("testShortNoUpperFlagNoLowerFlag", testShortNoUpperFlagNoLowerFlag),
-        ("testShortNoUpperFlagNoLowerFlagNoDigitFlag", testShortNoUpperFlagNoLowerFlagNoDigitFlag),
-        ("testValidShortLengthOption", testValidShortLengthOption),
+        ("--no-digit --no-lower excludes digits and lowercase and includes uppercase", testNoDigitFlagNoLowerFlag),
+        ("--no-digit excludes hasDigit and includes lowercase and uppercase", testNoDigitFlag),
+        ("--no-lower excludes lowercase and includes uppercase and digits", testNoLowerFlag),
+        ("--no-upper --no-digit excludes uppercase and digits and includes lowercase", testNoUpperFlagNoDigitFlag),
+        ("--no-upper --no-lower excludes uppercase and lowercase and includes digits", testNoUpperFlagNoLowerFlag),
+        ("--no-upper excludes uppercase and includes lowercase and digits", testNoUpperFlag),
+        ("-U -d excludes uppercase and digits and includes lowercase", testShortNoUpperFlagNoDigitFlag),
+        ("-U -u excludes uppercase and lowercase and includes digits", testShortNoUpperFlagNoLowerFlag),
+        ("-U excludes uppercase and includes lowercase and digits", testShortNoUpperFlag),
+        ("-d -u excludes digits and lowercase and includes uppercase", testShortNoDigitFlagNoLowerFlag),
+        ("-d excludes hasDigit and includes lowercase and uppercase", testShortNoDigitFlag),
+        ("-u excludes lowercase and includes uppercase and hasDigit", testShortNoLowerFlag),
+        ("a length that is too short fails", testLengthOptionTooShort),
+        ("a length that is too short fails", testShortLengthOptionTooShort),
+        ("a valid provided length uses that length", testValidLengthOption),
+        ("a valid provided length uses that length", testValidShortLengthOption),
+        ("all of --no-upper, --no-lower, --no-digit fails", testNoUpperFlagNoLowerFlagNoDigitFlag),
+        ("all of -U, -u, -d fails", testShortNoUpperFlagNoLowerFlagNoDigitFlag),
+        ("an invalid provided length fails", testInvalidLengthOption),
+        ("an invalid provided length fails", testInvalidShortLengthOption),
+        ("no provided length uses a default length", testDefaultLength),
+        ("none of --no-upper, --no-lower, --no-digit includes all three classes", testDefaultFlags),
     ]
 }
